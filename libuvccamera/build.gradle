@@ -33,10 +33,21 @@ android {
 		targetCompatibility javaTargetCompatibility
 	}
 
-    defaultConfig {
-        minSdkVersion 14
+	defaultConfig {
+		minSdkVersion 14
 		targetSdkVersion versionTarget
-    }
+		externalNativeBuild {
+			ndkBuild {
+				abiFilters 'armeabi-v7a', 'arm64-v8a' // Specify ABIs
+			}
+		}
+	}
+	ndkVersion "17.2.4988734"
+	externalNativeBuild {
+		ndkBuild {
+			path file('src/main/jni/Android.mk') // Or the correct path to your Android.mk
+		}
+	}
 
     buildTypes {
         release {
@@ -52,9 +63,9 @@ android {
 	}
 }
 
-tasks.withType(JavaCompile) {
-	compileTask -> compileTask.dependsOn ndkBuild
-}
+//tasks.withType(JavaCompile) {
+//	compileTask -> compileTask.dependsOn ndkBuild
+//}
 
 String getNdkBuildPath() {
 	Properties properties = new Properties()
@@ -69,19 +80,19 @@ String getNdkBuildPath() {
 	return ndkBuildPath
 }
 
-task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
-	println('executing ndkBuild')
-	def ndkBuildPath = getNdkBuildPath();
-	commandLine ndkBuildPath, '-j8', '-C', file('src/main').absolutePath
-}
+//task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
+//	println('executing ndkBuild')
+//	def ndkBuildPath = getNdkBuildPath();
+//	commandLine ndkBuildPath, '-j8', '-C', file('src/main').absolutePath
+//}
+//
+//task ndkClean(type: Exec, description: 'clean JNI libraries') {
+//	println('executing ndkBuild clean')
+//	def ndkBuildPath = getNdkBuildPath();
+//	commandLine ndkBuildPath, 'clean', '-C', file('src/main').absolutePath
+//}
 
-task ndkClean(type: Exec, description: 'clean JNI libraries') {
-	println('executing ndkBuild clean')
-	def ndkBuildPath = getNdkBuildPath();
-	commandLine ndkBuildPath, 'clean', '-C', file('src/main').absolutePath
-}
-
-clean.dependsOn 'ndkClean'
+//clean.dependsOn 'ndkClean'
 
 dependencies {
     implementation fileTree(dir: new File(buildDir, 'libs'), include: '*.jar')
